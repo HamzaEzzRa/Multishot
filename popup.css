@@ -1,0 +1,123 @@
+:root {
+    --background-color-error: #F7DDE1;
+    --background-color-secondary: #f7f7f7;
+    --background-color-primary: #fff;
+    --background-color-ternary: #edf9ff;
+    --border-color-secondary: #d2d2d2;
+    --border-color-primary: #e6e6e6;
+    --border-color-ternary: #c0e6f9;
+    --border-color-outline: #acacac;
+    --border-radius: 4px;
+    --border-radius-primary: 6px;
+    --border-style-primary: solid;
+    --border-width-thick: 4px;
+    --border-width-thin: 1px;
+    --box-shadow-primary: 0 2px 4px 0 hsla(0, 0%, 84%, 0.5);
+    --color-brand-primary: #ED1E45;
+    --color-primary: #585858;
+    --color-secondary: #000;
+    --color-dimmed: #4A4A4A;
+    --color-critical: var(--color-brand-primary);
+    --color-default: #ffa600;
+    --color-error: var(--color-brand-primary);
+    --color-link: #0797E1;
+    --color-info: #0797E1;
+    --color-tag: #07E1CF;
+    --font-size-big: 17px;
+    --font-size-medium: 16px;
+    --font-size-primary: 13px;
+    --font-size-small: 12px;
+    --margin-primary: 16px;
+    --margin-secondary: calc(var(--margin-primary) / 2);
+    --padding-primary: 16px;
+    --padding-secondary: calc(var(--padding-primary) / 2);
+    --primary-outline: var(--border-color-outline) dotted 1px;
+}
+
+body.main-body {
+    margin: 0;
+    min-width: 256px;
+}
+
+header.main-header {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: var(--padding-primary);
+    border-bottom: var(--border-width-thin) var(--border-style-primary) var(--border-color-primary);
+}
+
+div.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+p.main-title {
+    margin: 0 calc(100% / 15);
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: rgb(65, 65, 65);
+    user-select: none;
+}
+
+img.main-logo {
+    width: calc(100% / 5);
+    height: calc(100% / 5);
+    user-select: none;
+}
+
+button.cog-button {
+    width: var(--font-size-big);
+    height: var(--font-size-big);
+    border: 0;
+    opacity: 0.75;
+    background-image: url(icons/gear.svg?background#background);
+    background-repeat: no-repeat;
+    background-color: transparent;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+button.cog-button:hover {
+    opacity: 1;
+}
+
+div.main-input {
+    display: grid;
+    gap: 5px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.bottom-navbar {
+    background-color: rgb(65, 65, 65);
+    overflow: hidden;
+    width: 100%;
+}
+
+.bottom-navbar a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 10px 0;
+    text-decoration: none;
+    font-size: 17px;
+    width: calc(100% / 2);
+}
+
+.bottom-navbar a:hover {
+    background-color: gainsboro;
+    color: black;
+}
+
+.bottom-navbar a.active {
+    background-color: var(--color-default);
+    color: white;
+}
+
+.bottom-navbar .icon {
+    display: none;
+}

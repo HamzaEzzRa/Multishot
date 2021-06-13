@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=utf-8>
+    <title>Multishot</title>
+  </head>
+  <body class="main-body">
+    <header class="main-header">
+        <div class="logo-container">
+            <img class="main-logo" src="./icons/icon128.png" />
+            <p class="main-title">Multi<span style="font-weight: bold; color: black;">shot</span></p>
+        </div>
+        <button class="cog-button" id="options"></button>
+    </header>
+    <div class="main-input">
+        <label for="screen-name">Image Name:</label>
+        <input id="screen-name" />
+        <label for="screen-type">Image Type:</label>
+        <select id="screen-type">
+            <option selected value=".png">PNG</option>
+            <option value=".jpeg">JPEG</option>
+        </select>
+        <div style="display: flex; justify-content: space-evenly;">
+            <div style="display: flex; justify-content: center; gap: 2px;">
+                <label for="screen-full">Full Page:</label>
+                <input id="screen-full" type="checkbox" checked />
+            </div>
+            <div style="display: flex; justify-content: center; gap: 2px;">
+                <label for="screen-date">Add Date:</label>
+                <input id="screen-date" type="checkbox" checked />
+            </div>
+        </div>
+        <button id="screen-button">Screenshot</button>
+    </div>
+    <div class="bottom-navbar" id="bottom-navbar">
+        <a class="tab-button" href="#home">Home</a>
+        <a class="tab-button" href="#presets">Presets</a>
+    </div>
+    
+    <link rel="stylesheet" href="popup.css">
+    <script src="FileSaver.js"></script>
+    <script src="jszip.js"></script>
+    <script src="capture.js"></script>
+    <script src="popup.js"></script>
+    <script src="storage.js"></script>
+  </body>
+</html>
