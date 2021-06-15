@@ -133,7 +133,7 @@ const addPreset = (device) => {
     removeButtonWrapper.appendChild(removeButton);
     presetControls.appendChild(removeButtonWrapper);
 
-    presetsContainer.appendChild(preset);
+    presetsContainer.insertBefore(preset, presetsContainer.firstChild);
 };
 
 (function setupPresets() {
@@ -144,7 +144,6 @@ const addPreset = (device) => {
     });
     $('add-button').addEventListener('click', (event) => {
         event.preventDefault();
-        $('preset-form').reset();
 
         const newDevice = createDevice(
             $('device-name-input').value,
@@ -152,6 +151,8 @@ const addPreset = (device) => {
             $('device-height-input').value
         );
         addPreset(newDevice);
+
+        $('preset-form').reset();
     })
 })();
 
