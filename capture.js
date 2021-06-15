@@ -128,24 +128,7 @@ const getBlobs = (screenshots) => {
 };
 
 const saveBlob = (blob, filename, callback, errback) => {
-    const size = blob.size + (1024 / 2);
-
     callback(filename);
-    // const reqFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
-    // reqFileSystem(window.TEMPORARY, size, (fs) => {
-    //     fs.root.getFile(filename, {create: true}, (fileEntry) => {
-    //         fileEntry.createWriter((fileWriter) => {
-    //             fileWriter.onwriteend = () => {
-    //                 const urlName = ('filesystem:chrome-extension://' +
-    //                     chrome.i18n.getMessage('@@extension_id') +
-    //                     '/temporary/' + filename);
-
-    //                 callback(urlName);
-    //             };
-    //             fileWriter.write(blob);
-    //         }, errback);
-    //     }, errback);
-    // }, errback);
 };
 
 const captureToBlobs = (tab, format, fullPage, callback, errback, progress) => {

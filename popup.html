@@ -12,25 +12,49 @@
         </div>
         <button class="cog-button" id="options"></button>
     </header>
-    <div class="main-input">
-        <label for="screen-name">Image Name:</label>
-        <input id="screen-name" />
-        <label for="screen-type">Image Type:</label>
-        <select id="screen-type">
-            <option selected value=".png">PNG</option>
-            <option value=".jpeg">JPEG</option>
-        </select>
-        <div style="display: flex; justify-content: space-evenly;">
-            <div style="display: flex; justify-content: center; gap: 2px;">
-                <label for="screen-full">Full Page:</label>
-                <input id="screen-full" type="checkbox" checked />
+    <div class="main-scroller">
+        <div class="main-input" id="main-input">
+            <label for="screen-name">Image Name:</label>
+            <input id="screen-name" placeholder="Optional" />
+            <label for="screen-type">Image Type:</label>
+            <select id="screen-type">
+                <option selected value=".png">PNG</option>
+                <option value=".jpeg">JPEG</option>
+            </select>
+            <div style="display: flex; justify-content: space-evenly;">
+                <div style="display: flex; justify-content: center; gap: 2px;">
+                    <label for="screen-full">Full Page:</label>
+                    <input id="screen-full" type="checkbox" checked />
+                </div>
+                <div style="display: flex; justify-content: center; gap: 2px;">
+                    <label for="screen-date">Add Date:</label>
+                    <input id="screen-date" type="checkbox" checked />
+                </div>
+                <div style="display: flex; justify-content: center; gap: 2px;">
+                    <label for="screen-subfolder">Subfolder:</label>
+                    <input id="screen-subfolder" type="checkbox" checked />
+                </div>
             </div>
-            <div style="display: flex; justify-content: center; gap: 2px;">
-                <label for="screen-date">Add Date:</label>
-                <input id="screen-date" type="checkbox" checked />
-            </div>
+            <button id="screen-button">Screenshot</button>
         </div>
-        <button id="screen-button">Screenshot</button>
+        <div class="main-presets" id="main-presets">
+            <form id="preset-form">
+                <div class="preset-no-hover">
+                    <div style="display: inherit;">
+                        <img class="preset-icon" src="./icons/custom.svg" />
+                        <div class="preset-content">
+                            <input id="device-name-input" placeholder="Name" required style="width: 124px;" />
+                            <div>
+                                <input id="device-width-input" placeholder="Width" required pattern="[1-9][0-9]*" style="width: 50px; text-align: center;" />
+                                <span style="font-size: 16px; font-weight: bold;"> x </span>
+                                <input id="device-height-input" placeholder="Height" required pattern="[1-9][0-9]*" style="width: 50px; text-align: center;" />
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-button" id="add-button"></button>
+                </div>
+            </form>
+        </div>
     </div>
     <div class="bottom-navbar" id="bottom-navbar">
         <a class="tab-button" href="#home">Home</a>
@@ -40,8 +64,8 @@
     <link rel="stylesheet" href="popup.css">
     <script src="FileSaver.js"></script>
     <script src="jszip.js"></script>
+    <script src="storage.js"></script>
     <script src="capture.js"></script>
     <script src="popup.js"></script>
-    <script src="storage.js"></script>
   </body>
 </html>
