@@ -10,32 +10,47 @@
             <img class="main-logo" src="./icons/icon128.png" />
             <p class="main-title">Multi<span style="font-weight: bold; color: black;">shot</span></p>
         </div>
-        <button class="cog-button" id="options"></button>
+        <div class="tooltip">
+            <button class="cog-button" id="settings-button"></button>
+            <span class="tooltip-content tooltip-left" style="right: 42px;">Options</span>
+        </div>
     </header>
     <div class="main-scroller">
         <div class="main-input" id="main-input">
-            <label for="screen-name">Image Name:</label>
-            <input id="screen-name" placeholder="Optional" />
-            <label for="screen-type">Image Type:</label>
+            <label class="input-label" for="screen-name">Image Name</label>
+            <input id="screen-name" placeholder="Optional" type="text" />
+            <label class="input-label" for="screen-type">Image Type</label>
             <select id="screen-type">
                 <option selected value=".png">PNG</option>
                 <option value=".jpeg">JPEG</option>
             </select>
-            <div style="display: flex; justify-content: space-evenly;">
-                <div style="display: flex; justify-content: center; gap: 2px;">
-                    <label for="screen-full">Full Page:</label>
-                    <input id="screen-full" type="checkbox" checked />
+            <div style="display: inherit; margin: 4px 0; padding: 0 4px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin: 10px 0;">
+                    <label for="screen-full" class="checkbox-label">Screenshot Full Page</label>
+                    <div class="toggle-button">
+                        <input type="checkbox" id="screen-full" checked />
+                        <div class="knobs"></div>
+                        <div class="layer"></div>
+                    </div>
                 </div>
-                <div style="display: flex; justify-content: center; gap: 2px;">
-                    <label for="screen-date">Add Date:</label>
-                    <input id="screen-date" type="checkbox" checked />
+                <div style="display: flex; align-items: center; justify-content: space-between; margin: 10px 0;">
+                    <label for="screen-date" class="checkbox-label">Add Date To Name</label>
+                    <div class="toggle-button">
+                        <input type="checkbox" id="screen-date" checked />
+                        <div class="knobs"></div>
+                        <div class="layer"></div>
+                    </div>
                 </div>
-                <div style="display: flex; justify-content: center; gap: 2px;">
-                    <label for="screen-subfolder">Subfolder:</label>
-                    <input id="screen-subfolder" type="checkbox" checked />
+                <div style="display: flex; align-items: center; justify-content: space-between; margin: 10px 0;">
+                    <label for="screen-subfolder" class="checkbox-label">Output In Subfolders</label>
+                    <div class="toggle-button">
+                        <input type="checkbox" id="screen-subfolder" checked />
+                        <div class="knobs"></div>
+                        <div class="layer"></div>
+                    </div>
                 </div>
             </div>
-            <button id="screen-button">Screenshot</button>
+            <button class="screen-button" id="screen-button">Screenshot</button>
         </div>
         <div class="main-presets" id="main-presets">
             <form id="preset-form">
@@ -43,17 +58,18 @@
                     <div style="display: inherit;">
                         <img class="preset-icon" src="./icons/custom.svg" />
                         <div class="preset-content">
-                            <input id="device-name-input" placeholder="Name" required style="width: 124px;" />
+                            <input id="device-name-input" type="text" placeholder="Name" required style="width: 80%;" />
                             <div>
-                                <input id="device-width-input" placeholder="Width" required pattern="[1-9][0-9]*" style="width: 50px; text-align: center;" />
+                                <input id="device-width-input" type="text" placeholder="Width" required pattern="[1-9][0-9]*" style="width: 30%; text-align: center;" />
                                 <span style="font-size: 16px; font-weight: bold;"> x </span>
-                                <input id="device-height-input" placeholder="Height" required pattern="[1-9][0-9]*" style="width: 50px; text-align: center;" />
+                                <input id="device-height-input" type="text" placeholder="Height" required pattern="[1-9][0-9]*" style="width: 30%; text-align: center;" />
                             </div>
                         </div>
                     </div>
                     <button class="add-button" id="add-button"></button>
                 </div>
             </form>
+            <div style="display: inherit;" id="presets-container"></div>
         </div>
     </div>
     <div class="bottom-navbar" id="bottom-navbar">

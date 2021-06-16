@@ -1,7 +1,8 @@
 const $ = (id) => document.getElementById(id);
 
 var inputContainer = $('main-input');
-var presetsContainer = $('main-presets');
+var presetsMain = $('main-presets');
+var presetsContainer = $('presets-container');
 
 const removeItem = (arr, device) => {
     var index = arr.indexOf(device);
@@ -24,7 +25,7 @@ const createDevice = (name, width, height) => {
     return newDevice;
 };
 
-const addPreset = (device) => {
+const addPreset = (device, pushAtStart = false) => {
     const type = device.type.toLowerCase(),
         name = device.name,
         width = device.width,
@@ -83,6 +84,11 @@ const addPreset = (device) => {
     presetControls.classList.add('preset-controls');
     preset.appendChild(presetControls);
 
+    const toggleInputWrapper = document.createElement('div');
+    toggleInputWrapper.classList.add('tooltip');
+    toggleInputWrapper.style.display = 'inherit';
+    presetControls.appendChild(toggleInputWrapper);
+
     const toggleInput = document.createElement('input');
     toggleInput.setAttribute('type', 'checkbox');
     if (active)
@@ -95,7 +101,19 @@ const addPreset = (device) => {
         });
         saveDevices(currentDevices);
     });
-    presetControls.appendChild(toggleInput);
+    toggleInputWrapper.appendChild(toggleInput);
+
+    const toggleTooltip = document.createElement('span');
+    toggleTooltip.classList.add('tooltip-content');
+    toggleTooltip.classList.add('tooltip-left');
+    toggleTooltip.style.right = "68px";
+    toggleTooltip.textContent = 'Toggle';
+    toggleInputWrapper.appendChild(toggleTooltip);
+
+    const removeButtonWrapper = document.createElement('div');
+    removeButtonWrapper.classList.add('remove-button-wrapper');
+    removeButtonWrapper.classList.add('tooltip');
+    presetControls.appendChild(removeButtonWrapper);
 
     const removeButton = document.createElement('button');
     removeButton.classList.add('cancel-button');
@@ -128,12 +146,20 @@ const addPreset = (device) => {
             document.body.appendChild(modal);
         }
     });
-    const removeButtonWrapper = document.createElement('div');
-    removeButtonWrapper.classList.add('remove-button-wrapper');
     removeButtonWrapper.appendChild(removeButton);
-    presetControls.appendChild(removeButtonWrapper);
 
-    presetsContainer.insertBefore(preset, presetsContainer.firstChild);
+    const removeTooltip = document.createElement('span');
+    removeTooltip.classList.add('tooltip-content');
+    removeTooltip.classList.add('tooltip-bottom');
+    removeTooltip.style.top = "43px";
+    removeTooltip.style.right = "0px";
+    removeTooltip.textContent = 'Delete';
+    removeButtonWrapper.appendChild(removeTooltip);
+
+    if (pushAtStart)
+        presetsContainer.insertBefore(preset, presetsContainer.firstChild);
+    else
+        presetsContainer.appendChild(preset);
 };
 
 (function setupPresets() {
@@ -150,10 +176,13 @@ const addPreset = (device) => {
             $('device-width-input').value,
             $('device-height-input').value
         );
-        addPreset(newDevice);
+        addPreset(newDevice, true);
 
         $('preset-form').reset();
     })
+    $('settings-button').addEventListener('click', () => {
+        chrome.tabs.create({ url: './options.html' });
+    });
 })();
 
 (function setupNavBar() {
@@ -175,17 +204,17 @@ const addPreset = (device) => {
             const href = this.href.split('#')[1].toLowerCase();
             if (href === 'home') {
                 inputContainer.style.transitionDuration = '0.45s';
-                presetsContainer.style.transitionDuration = '0.45s';
+                presetsMain.style.transitionDuration = '0.45s';
 
                 inputContainer.style.transform = 'translateX(0%)';
-                presetsContainer.style.transform = 'translateX(100%)';
+                presetsMain.style.transform = 'translateX(100%)';
             }
             else if (href === 'presets') {
                 inputContainer.style.transitionDuration = '0.45s';
-                presetsContainer.style.transitionDuration = '0.45s';
+                presetsMain.style.transitionDuration = '0.45s';
 
                 inputContainer.style.transform = 'translateX(-100%)';
-                presetsContainer.style.transform = 'translateX(0%)';
+                presetsMain.style.transform = 'translateX(0%)';
             }
         });
     }
@@ -271,13 +300,6 @@ const captureDevice = (index) => {
     if (index > 0)
         chrome.windows.remove(resultWindowId);
     const device = deviceList[index];
-    // if (!device.active) {
-    //     if (currentDevice < deviceList.length - 1) {
-    //         currentDevice += 1;
-    //         captureDevice(currentDevice);
-    //     }
-    //     return;
-    // }
     const options = {
         focused: true,
         left: 0,

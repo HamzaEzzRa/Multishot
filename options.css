@@ -1,0 +1,135 @@
+body {
+    height: auto;
+    display: flex;
+    overflow-y: auto;
+    margin: 1rem;
+    color: #444;
+    background-color: #F3F3F3;
+    font-size: 1rem;
+    line-height: 1.3rem;
+    justify-content: center;
+}
+
+div.sidebar {
+    flex-shrink: 0;
+}
+
+div.sidebar-main {
+    margin-top: 7px;
+    height: auto;
+}
+
+div.sidebar-main header {
+    margin-right: 20px;
+}
+
+div.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+p.sidebar-title {
+    margin: 0 16px;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: rgb(65, 65, 65);
+    user-select: none;
+}
+
+img.sidebar-logo {
+    width: 58px;
+    height: auto;
+    user-select: none;
+}
+
+p.sidebar-subtitle {
+    font-size: 1rem;
+    margin-top: 30px;
+    line-height: 2.6rem;
+    opacity: 0.6;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+div.sidebar-main nav {
+    margin: 1.4rem 0rem
+}
+
+nav ul.tabs {
+    position: relative;
+    margin: 0rem;
+    padding: 0rem;
+    font-size: 1.1rem;
+    list-style: none;
+}
+
+nav ul.tabs li a.tab-item {
+    display: flex;
+    margin-right: -1px;
+    margin-left: -1px;
+    padding: 1rem 0.8rem;
+    border: 1px solid transparent;
+    border-radius: 4px 0 0 4px;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+nav ul.tabs li a.tab-item[aria-selected=true] {
+    border-right-color: transparent !important;
+    border-color: #CDCDCD;
+    background-color: #FFF;
+    font-weight: 700;
+}
+
+nav ul.tabs li a.tab-item:hover[aria-selected=false] {
+    background-color: #e4e4e4;
+}
+
+div.sidebar-main footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 47vh;
+    margin-bottom: 6.5vh;
+}
+
+div.sidebar-main footer a {
+    display: block;
+    border: 2px solid #0797e1;
+    color: #0797E1;
+    padding: 0.6rem 1.4rem;
+    border-radius: 4px;
+    background-color: transparent;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+div.sidebar-main footer a:hover {
+    box-shadow: inset 0 0 0 1px #0797e1;
+}
+
+main {
+    width: 46.3rem;
+    padding: 0px 0rem 1.4rem;
+    border: 1px solid #CDCDCD;
+    border-radius: 4px;
+    background-color: #FFF;
+}
+
+main h1 {
+    font-weight: lighter;
+    font-size: 2.8rem;
+    margin: 2rem 0rem;
+    padding: 0rem 2rem;
+}
+
+main section {
+    display: flex;
+    margin: 0 2rem;
+    padding: 1.4rem 0;
+    border-top: 1px solid #CDCDCD;
+}
