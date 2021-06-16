@@ -168,17 +168,20 @@ const addPreset = (device, pushAtStart = false) => {
             addPreset(device);
         });
     });
+    const form = $('preset-form');
     $('add-button').addEventListener('click', (event) => {
-        event.preventDefault();
+        if (form.checkValidity()) {
+            event.preventDefault();
 
-        const newDevice = createDevice(
-            $('device-name-input').value,
-            $('device-width-input').value,
-            $('device-height-input').value
-        );
-        addPreset(newDevice, true);
-
-        $('preset-form').reset();
+            const newDevice = createDevice(
+                $('device-name-input').value,
+                $('device-width-input').value,
+                $('device-height-input').value
+            );
+            addPreset(newDevice, true);
+    
+            form.reset();
+        }
     })
     $('settings-button').addEventListener('click', () => {
         chrome.tabs.create({ url: './options.html' });
