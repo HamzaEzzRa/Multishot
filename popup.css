@@ -292,7 +292,7 @@ div.main-presets {
     height: 100%;
     display: grid;
     grid-auto-rows: max-content;
-    overflow-y: auto;
+    overflow-y: scroll;
     transform: translateX(100%);
     transition: transform 0s ease;
 }
@@ -451,6 +451,7 @@ div.warning-modal {
     z-index: 999;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     background-color: rgba(255, 255, 255, 0.8);
     color: #000;
     text-align: center;
@@ -458,13 +459,13 @@ div.warning-modal {
 
 div.warning-modal img {
     width: 82px;
-    margin-top: 30px;
-    margin-bottom: 5px;
+    margin-bottom: 3.5vh;
 }
 
 div.warning-modal p {
-    margin-bottom: 20px;
-    font-size: 18px;
+    padding: 0 8px;
+    font-size: 20px;
+    margin-bottom: 3.5vh;
 }
 
 div.warning-modal button.accept {
@@ -473,6 +474,7 @@ div.warning-modal button.accept {
     border-radius: 5px;
     width: 100px;
     padding: 14px;
+    margin: 3.5vh 0;
     font-size: 20px;
     color: white;
     box-shadow: 0px 6px 18px -5px rgb(250, 163, 81);

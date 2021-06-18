@@ -1,7 +1,11 @@
+:root {
+    --color-default: #ffa600;
+}
+
 body {
     height: auto;
     display: flex;
-    overflow-y: auto;
+    overflow-y: scroll;
     margin: 1rem;
     color: #444;
     background-color: #F3F3F3;
@@ -14,9 +18,15 @@ div.sidebar {
     flex-shrink: 0;
 }
 
+.fixed {
+    position: sticky;
+    width: 261.2px;
+}
+
 div.sidebar-main {
-    margin-top: 7px;
+    position: fixed;
     height: auto;
+    margin-top: 7px;
 }
 
 div.sidebar-main header {
@@ -88,16 +98,22 @@ nav ul.tabs li a.tab-item:hover[aria-selected=false] {
 
 div.sidebar-main footer {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 47vh;
-    margin-bottom: 6.5vh;
+    margin-top: 67.5%;
+}
+
+div.sidebar-main footer p {
+    color: #0797e1;
+    width: 50%;
+    font-size: 1.1rem;
 }
 
 div.sidebar-main footer a {
     display: block;
     border: 2px solid #0797e1;
-    color: #0797E1;
+    color: #0797e1;
     padding: 0.6rem 1.4rem;
     border-radius: 4px;
     background-color: transparent;
@@ -114,6 +130,8 @@ div.sidebar-main footer a:hover {
 
 main {
     width: 46.3rem;
+    height: fit-content;
+    min-height: 52vh;
     padding: 0px 0rem 1.4rem;
     border: 1px solid #CDCDCD;
     border-radius: 4px;
@@ -127,9 +145,428 @@ main h1 {
     padding: 0rem 2rem;
 }
 
+main a {
+    text-decoration: none;
+}
+
+main a:hover {
+    user-select: none;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 main section {
-    display: flex;
     margin: 0 2rem;
-    padding: 1.4rem 0;
+    padding-top: 1rem;
     border-top: 1px solid #CDCDCD;
+}
+
+main section h2 {
+    font-size: 18px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+main section .options-title {
+    width: 20%;
+    margin-right: 2rem;
+    flex: 1;
+}
+
+main section ul.options-ul {
+    padding: 5px 45px;
+}
+
+ul li.options-li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    margin-bottom: 0.8rem;
+    padding: 0rem;
+}
+
+ul li.options-li div.option-controls {
+    width: 20%;
+    padding-right: 5px;
+}
+
+ul li.options-li div.option-controls input[type=number] {
+    width: 44%;
+}
+
+ul li.options-li div.option-controls input[type=text] {
+    width: 60%;
+}
+
+ul li.options-li .option-desc {
+    width: 80%;
+}
+
+.reset-button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 166, 0, 0.7);
+    border-radius: 100%;
+    transition: border 0.2s ease;
+    cursor: pointer;
+    user-select: none;
+}
+
+.reset-button-wrapper:hover {
+    border: 2px solid rgba(255, 166, 0, 1);
+}
+
+.reset-button-wrapper:hover .reset-button {
+    opacity: 1;
+}
+
+.reset-button {
+    width: 70%;
+    height: 70%;
+    border: 0;
+    opacity: 0.7;
+    background-image: url(icons/reset.svg);
+    background-repeat: no-repeat;
+    background-color: transparent;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.tooltip {
+    display: flex;
+    flex-flow: row-reverse;
+    align-items: center;
+}
+
+.tooltip .tooltip-content {
+    visibility: hidden;
+    position: absolute;
+    width: auto;
+    background-color: rgba(70, 70, 70, 0.9);
+    color: #fff;
+    text-align: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    z-index: 1;
+    opacity: 0;
+    font-size: 12px;
+    font-weight: bold;
+    transition: opacity 0.3s;
+}
+  
+.tooltip:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+div.preset {
+    position: relative;
+    box-sizing: border-box;
+    width: inherit;
+    height: 48px;
+    padding: 8px;
+    user-select: none;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    border-radius: 3px;
+    justify-content: space-between;
+}
+
+/* div.preset:hover {
+    background: #ffa60080;
+} */
+
+img.preset-icon {
+    position: relative;
+    margin-right: 8px;
+    box-sizing: border-box;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    background: transparent;
+    fill: #222;
+    border-radius: 2px;
+    flex: 0 0 auto;
+    display: inline-block;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+div.preset-content {
+    border-left: 1.25px solid rgba(0, 0, 0, .15);
+    padding-left: 12px;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-around;
+    width: 100%;
+}
+
+div.preset-name {
+    color: rgb(120, 120, 120);
+    height: 11px;
+    font-size: 11px;
+    line-height: 1em;
+    font-weight: 550;
+    font-style: italic;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+main select {
+    font-size: 14px;
+    padding: 8px 4px;
+    border: solid 1px rgba(0, 0, 0, .3);
+    border-radius: 4px;
+    outline-color: rgb(135, 185, 230);
+    background-color: rgb(255, 255, 255);
+}
+
+main input[type="text"], main input[type="number"] {
+    font-size: 16px;
+    padding: 8px 8px;
+    height: 16px;
+    border: solid 1px rgba(0, 0, 0, .3);
+    border-radius: 4px;
+    outline-color: rgb(135, 185, 230);
+    background-color: rgb(255, 255, 255);
+}
+
+div.toggle-button {
+    position: relative;
+    width: 68px;
+    height: 26px;
+    overflow: hidden;
+    opacity: 0.8;
+    transition: opacity 0.15s ease;
+}
+
+div.toggle-button:hover {
+    opacity: 1;
+}
+
+div.toggle-button input[type="checkbox"] {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+div.knobs, div.layer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+div.toggle-button, div.layer {
+    border-radius: 100px;
+}
+
+div.knobs {
+    z-index: 2;
+}
+
+div.layer {
+    width: 100%;
+    background-color: #ffd3d3;
+    transition: 0.3s ease all;
+    z-index: 1;
+}
+
+div.toggle-button div.knobs:before {
+    position: absolute;
+    content: '';
+    left: 42px;
+    top: 2px;
+    width: 14.5px;
+    height: 3.5px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+    padding: 9px 4px;
+    border-radius: 50%;
+    background-color: #f44336;
+    transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
+}
+
+div.toggle-button input[type="checkbox"]:checked + div.knobs:before {
+    content: '';
+    left: 4px;
+    background-color: #03A9F4;
+}
+
+div.toggle-button input[type="checkbox"]:checked ~ div.layer {
+    background-color: #cef0fd;
+}
+
+div.toggle-button div.knobs, div.toggle-button div.knobs:before, div.toggle-button div.layer {
+    transition: 0.3s ease all;
+}
+
+.edit-button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    margin-top: 10px;
+    padding-left: 2px;
+    border: 2px solid rgba(255, 166, 0, 0.7);
+    border-radius: 100%;
+    transition: border 0.2s ease;
+    cursor: pointer;
+    user-select: none;
+}
+
+.edit-button-wrapper:hover {
+    border: 2px solid rgba(255, 166, 0, 1);
+}
+
+.edit-button-wrapper:hover .edit-button {
+    opacity: 1;
+}
+
+.edit-button {
+    width: 70%;
+    height: 70%;
+    border: 0;
+    opacity: 0.7;
+    background-image: url(icons/edit.svg);
+    background-repeat: no-repeat;
+    background-color: transparent;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+tbody .hotkey-container {
+    display: flex;
+    align-items: center;
+    margin: 6px 0;
+}
+
+tbody .hotkey-desc {
+    font-size: 17px;
+}
+
+code.hotkey-command {
+    background: #eee;
+    color: #666;
+    font-size: 16px;
+    border-radius: 2px;
+    white-space: nowrap;
+    line-height: 24px;
+    display: block;
+    text-align: center;
+    margin: 4px 16px 4px 0;
+    padding: 0 8px;
+}
+
+div.version {
+    margin: 30px 0;
+    padding: 0;
+}
+
+div.version .version-header {
+    white-space: pre;
+    display: flex;
+    align-items: center;
+    flex-flow: row nowrap;
+    font-weight: 500;
+}
+
+div.version .version-header::before, div.version .version-header::after {
+    content: '';
+    display: inline-block;
+    height: 0;
+    overflow: hidden;
+    border-bottom: 1px solid #cdcdcd;
+    vertical-align: middle;
+}
+
+div.version .version-header::before {
+    width: 24px;
+    margin-right: 12px;
+    flex-grow: 0;
+}
+
+div.version .version-header::after {
+    margin-left: 12px;
+    flex-grow: 2;
+}
+
+div.version .version-date {
+    color: rgb(140, 140, 140); font-style: italic;
+}
+
+div.warning-modal {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    position: fixed;
+    z-index: 999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #000;
+    text-align: center;
+}
+
+div.warning-modal img {
+    width: 82px;
+    margin-bottom: 3.5vh;
+}
+
+div.warning-modal p {
+    padding: 0 8px;
+    font-size: 20px;
+    margin-bottom: 3.5vh;
+}
+
+div.warning-modal div.controls-wrapper {
+    display: flex;
+    flex-flow: row;
+    gap: 30px;
+}
+
+div.warning-modal div.controls-wrapper button.accept {
+    background-color: red;
+    border: none;
+    border-radius: 5px;
+    width: 140px;
+    padding: 14px;
+    margin: 3.5vh 0;
+    font-size: 20px;
+    color: white;
+    box-shadow: 0px 6px 18px -5px red;
+    cursor: pointer;
+}
+
+div.warning-modal div.controls-wrapper button.cancel {
+    background-color: var(--color-default);
+    border: none;
+    border-radius: 5px;
+    width: 140px;
+    padding: 14px;
+    margin: 3.5vh 0;
+    font-size: 20px;
+    color: white;
+    box-shadow: 0px 6px 18px -5px rgb(250, 163, 81);
+    cursor: pointer;
 }

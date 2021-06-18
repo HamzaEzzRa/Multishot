@@ -18,17 +18,17 @@
     <div class="main-scroller">
         <div class="main-input" id="main-input">
             <label class="input-label" for="screen-name">Image Name</label>
-            <input id="screen-name" placeholder="Optional" type="text" />
+            <input id="screen-name" placeholder="Optional" type="text">
             <label class="input-label" for="screen-type">Image Type</label>
             <select id="screen-type">
-                <option selected value=".png">PNG</option>
-                <option value=".jpeg">JPEG</option>
+                <option value=".png" class="format-option">PNG</option>
+                <option value=".jpeg" class="format-option">JPEG</option>
             </select>
             <div style="display: inherit; margin: 4px 0; padding: 0 4px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin: 10px 0;">
                     <label for="screen-full" class="checkbox-label">Screenshot Full Page</label>
                     <div class="toggle-button">
-                        <input type="checkbox" id="screen-full" checked />
+                        <input type="checkbox" id="screen-full" checked>
                         <div class="knobs"></div>
                         <div class="layer"></div>
                     </div>
@@ -36,7 +36,7 @@
                 <div style="display: flex; align-items: center; justify-content: space-between; margin: 10px 0;">
                     <label for="screen-date" class="checkbox-label">Add Date To Name</label>
                     <div class="toggle-button">
-                        <input type="checkbox" id="screen-date" checked />
+                        <input type="checkbox" id="screen-date" checked>
                         <div class="knobs"></div>
                         <div class="layer"></div>
                     </div>
@@ -44,7 +44,7 @@
                 <div style="display: flex; align-items: center; justify-content: space-between; margin: 10px 0;">
                     <label for="screen-subfolder" class="checkbox-label">Output In Subfolders</label>
                     <div class="toggle-button">
-                        <input type="checkbox" id="screen-subfolder" checked />
+                        <input type="checkbox" id="screen-subfolder" checked>
                         <div class="knobs"></div>
                         <div class="layer"></div>
                     </div>
@@ -57,12 +57,12 @@
                 <div class="preset-no-hover">
                     <div style="display: inherit;">
                         <img class="preset-icon" src="./icons/custom.svg" />
-                        <div class="preset-content">
-                            <input id="device-name-input" type="text" placeholder="Name" required style="width: 80%;" />
-                            <div>
-                                <input id="device-width-input" type="text" placeholder="Width" required pattern="[1-9][0-9]*" style="width: 30%; text-align: center;" />
+                        <div class="preset-content" style="width: 70%; gap: 2px;">
+                            <input id="device-name-input" type="text" placeholder="Name" required >
+                            <div style="display: flex; justify-content: space-between;">
+                                <input id="device-width-input" type="text" placeholder="Width" required pattern="[1-9][0-9]*" style="width: 32%; text-align: center;">
                                 <span style="font-size: 16px; font-weight: bold;"> x </span>
-                                <input id="device-height-input" type="text" placeholder="Height" required pattern="[1-9][0-9]*" style="width: 30%; text-align: center;" />
+                                <input id="device-height-input" type="text" placeholder="Height" required pattern="[1-9][0-9]*" style="width: 32%; text-align: center;">
                             </div>
                         </div>
                     </div>
@@ -78,7 +78,6 @@
     </div>
     
     <link rel="stylesheet" href="popup.css">
-    <script src="FileSaver.js"></script>
     <script src="jszip.js"></script>
     <script src="storage.js"></script>
     <script src="capture.js"></script>

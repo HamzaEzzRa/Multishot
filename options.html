@@ -6,27 +6,33 @@
   </head>
   <body>
     <div class="sidebar">
-      <div class="sidebar-main">
-        <header>
-          <div class="logo-container">
-              <img class="sidebar-logo" src="./icons/icon128.png" />
-              <p class="sidebar-title">Multi<span style="font-weight: bold; color: black;">shot</span></p>
-          </div>
-          <p class="sidebar-subtitle">Options</p>
-        </header>
-        <nav>
-          <ul id="sidebar-tabs" class="tabs">
-            <li>
-              <a class="tab-item" href="#general" aria-selected="true">General</a>
-            </li>
-            <li>
-              <a class="tab-item" href="#help" aria-selected="false">Help</a>
-            </li>
-          </ul>
-        </nav>
-        <footer>
-          <a href="https://github.com/HamzaEzzRa/Multishot" target="_blank" rel="noopener noreferrer">Contribute</a>
-        </footer>
+      <div class="fixed">
+        <div class="sidebar-main">
+          <header>
+            <div class="logo-container">
+                <img class="sidebar-logo" src="./icons/icon128.png" />
+                <p class="sidebar-title">Multi<span style="font-weight: bold; color: black;">shot</span></p>
+            </div>
+            <p class="sidebar-subtitle">Options</p>
+          </header>
+          <nav>
+            <ul id="sidebar-tabs" class="tabs">
+              <li>
+                <a class="tab-item" href="#general" aria-selected="true">General</a>
+              </li>
+              <li>
+                <a class="tab-item" href="#hotkeys" aria-selected="false">Hotkeys</a>
+              </li>
+              <li>
+                <a class="tab-item" href="#about" aria-selected="false">About</a>
+              </li>
+            </ul>
+          </nav>
+          <footer>
+            <p>Have a new idea or found a bug ?</p>
+            <a href="https://github.com/HamzaEzzRa/Multishot" target="_blank" rel="noopener noreferrer">Contribute</a>
+          </footer>
+        </div>
       </div>
     </div>
     <main id="body-main">
@@ -35,20 +41,117 @@
           <h1>General</h1>  
         </header>
         <section>
-
+          <h2 class="options-title">Capture</h2>
+          <ul class="options-ul">
+            <li class="options-li">
+              <div class="option-controls">
+                <select id="image-format-options">
+                  <option value=".png" class="format-option">PNG</option>
+                  <option value=".jpeg" class="format-option">JPEG</option>
+                </select>
+              </div>
+              <span class="option-desc">Default image format. Change this to your preferred type to avoid tweaking it each time you open the extension.</span>
+            </li>
+            <li class="options-li">
+              <div class="option-controls">
+                <input type="number" min="1" max="100" id="image-quality" required>
+              </div>
+              <span class="option-desc">Image quality. This setting is only applicable to JPEG format as PNG is losseless and should match the original page quality.</span>
+            </li>
+            <li class="options-li">
+              <div class="option-controls">
+                <input type="number" id="capture-delay" min="0" required>
+              </div>
+              <span class="option-desc">Capture delay. Wait a number of seconds after the page has done loading. Allows for dynamic rendering and animations to be completed. (Default is 0)</span>
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2 class="options-title">Downloads</h2>
+          <ul class="options-ul">
+            <li class="options-li">
+              <div class="option-controls">
+                <input type="text" id="zip-name" required>
+              </div>
+              <span class="option-desc">Default zip name. Please limit this to letters, numbers, dashes, and underscores. Invalid characters will be automatically removed.</span>
+            </li>
+            <li class="options-li">
+              <div class="option-controls">
+                <div class="toggle-button">
+                  <input type="checkbox" id="save-as">
+                  <div class="knobs"></div>
+                  <div class="layer"></div>
+                </div>
+              </div>
+              <span class="option-desc">Save as dialog. Prompt a default "save as" dialog instead of automatically downloading the zip file.</span>
+            </li>
+          </ul>
+        </section>
+        <section>
+          <div style="display: flex; column-gap: 12px; margin-bottom: 14px;">
+            <h2 class="options-title" style="flex: 0; margin: 0;">Presets</h2>
+            <div class="reset-button-wrapper tooltip" id="presets-reset">
+              <button class="reset-button"></button>
+              <span class="tooltip-content" style="margin-left: 185px;">Reset default presets</span>
+            </div>
+          </div>
+          <div style="display: inherit;" id="presets-container"></div>
         </section>
       </div>
-      <div class="options-main" id="help" style="display: none;">
+      <div class="options-main" id="hotkeys" style="display: none;">
         <header>
-          <h1>Help</h1>
+          <div style="display: flex; column-gap: 12px; align-items: center;">
+            <h1 class="options-title" style="flex: 0; padding: 0 0 0 2rem;">Hotkeys</h1>
+            <div class="edit-button-wrapper tooltip">
+              <button class="edit-button" id="hotkey-edit"></button>
+              <span class="tooltip-content" style="margin-left: 150px;">Edit hotkeys</span>
+            </div>
+          </div>
+        </header>
+        <section style="padding-top: 1.6rem;">
+          <table>
+            <tbody id="hotkey-control">
+              <tr class="hotkey-container">
+                <td>
+                  <code class="hotkey-command">Alt + Shift + M</code>
+                </td>
+                <td class="hotkey-desc">Activate the extension</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+      <div class="options-main" id="about" style="display: none;">
+        <header>
+          <h1>About</h1>
         </header>
         <section>
-            
+          <h2 class="options-title">Version</h2>
+          <ul class="options-ul" style="font-size: 1.1rem;">
+            <li style="margin-bottom: 5px; font-weight: 600;">Multishot <span style="color: rgb(140, 140, 140); font-style: italic; font-weight: 400;">0.3</span></li>
+            <li class="options-li" style="margin-bottom: 5px;"><a href="#release-notes" class="tab-item" style="color: #0797e1;">What's new in this version ?</a></li>
+          </ul>
         </section>
+        <section>
+          <h2 class="options-title">Credits</h2>
+          <ul class="options-ul">
+            <li style="margin: 0;"><a style="color: #ffa600;" href="https://github.com/mrcoles/full-page-screen-capture-chrome-extension" target="_blank" rel="noopener noreferrer">Full-page-screen-capture-chrome-extension</a><span> - a full page capture Github repo</span></li>
+            <li style="margin: 0;"><span>Icons by Font Awesome - </span><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" style="color: #ffa600;">CC BY 4.0 License</a></li>
+            <li style="margin: 0;"><span>The Github community for their suggestions and help</span></li>
+          </ul>
+        </section>
+      </div>
+      <div class="options-main" id="release-notes" style="display: none;">
+        <header>
+          <h1>Release Notes</h1>
+        </header>
+        <section id="version-control" style="padding-top: 0.1rem; border-top: none;"></section>
       </div>
     </main>
 
     <link rel="stylesheet" href="options.css">
+    <script src="storage.js"></script>
+    <script src="release.js"></script>
     <script src="options.js"></script>
   </body>
 </html>

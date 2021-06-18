@@ -20,8 +20,8 @@ const initiateCapture = (tab, fullPage, callback) => {
     });
 };
 
-const capture = (data, screenshots, sendResponse, format) => {
-    chrome.tabs.captureVisibleTab(resultWindowId, { format }, (dataURI) => {
+const capture = (data, screenshots, sendResponse, format, quality) => {
+    chrome.tabs.captureVisibleTab(resultWindowId, { format, quality }, (dataURI) => {
         if (dataURI) {
             let image = new Image();
             image.onload = () => {
@@ -131,7 +131,7 @@ const saveBlob = (blob, filename, callback, errback) => {
     callback(filename);
 };
 
-const captureToBlobs = (tab, format, fullPage, callback, errback, progress) => {
+const captureToBlobs = (tab, format, quality, fullPage, callback, errback, progress) => {
     let loaded = false,
         screenshots = [],
         timeout = 3000,
@@ -148,7 +148,7 @@ const captureToBlobs = (tab, format, fullPage, callback, errback, progress) => {
     const listener = (request, sender, sendResponse) => {
         if (request.msg === 'capture') {
             progress(request.complete);
-            capture(request, screenshots, sendResponse, format);
+            capture(request, screenshots, sendResponse, format, quality);
 
             return true;
         }
@@ -185,8 +185,8 @@ const captureToBlobs = (tab, format, fullPage, callback, errback, progress) => {
     }, timeout);
 };
 
-const captureToFiles = (tab, filename, format, fullPage, callback, errback, progress) => {
-    captureToBlobs(tab, format, fullPage, (blobs) => {
+const captureToFiles = (tab, filename, format, quality, fullPage, callback, errback, progress) => {
+    captureToBlobs(tab, format, quality, fullPage, (blobs) => {
         let i = 0,
             len = blobs.length,
             filenames = [];
@@ -195,7 +195,7 @@ const captureToFiles = (tab, filename, format, fullPage, callback, errback, prog
             saveBlob(blobs[i], filename, (filename) => {
                 i++;
                 filenames.push(filename);
-                i >= len ? callback(blobs, filenames) : doNext();
+                i >= len ? callback(blobs, filenames, settings) : doNext();
             }, errback);
         })();
     }, errback, progress);

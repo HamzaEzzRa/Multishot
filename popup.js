@@ -25,147 +25,20 @@ const createDevice = (name, width, height) => {
     return newDevice;
 };
 
-const addPreset = (device, pushAtStart = false) => {
-    const type = device.type.toLowerCase(),
-        name = device.name,
-        width = device.width,
-        height = device.height,
-        active = device.active;
-
-    let src = '';
-    switch (type) {
-        case 'desktop':
-            src = './icons/desktop.svg';
-            break;
-        case 'laptop':
-            src = './icons/laptop.svg';
-            break;
-        case 'tablet':
-            src = './icons/tablet.svg';
-            break;
-        case 'mobile':
-            src = './icons/mobile.svg';
-            break;
-        case 'custom':
-            src = './icons/custom.svg';
-            break;
-        default:
-            src = './icons/custom.svg';
-            break;
-    }
-
-    const preset = document.createElement('div');
-    preset.classList.add('preset');
-
-    const detailsWrapper = document.createElement('div');
-    detailsWrapper.style.display = 'inherit';
-    preset.appendChild(detailsWrapper);
-
-    const presetIcon = document.createElement('img');
-    presetIcon.classList.add('preset-icon');
-    presetIcon.setAttribute('src', src);
-    detailsWrapper.appendChild(presetIcon);
-
-    const presetContent = document.createElement('div');
-    presetContent.classList.add('preset-content');
-    detailsWrapper.appendChild(presetContent);
-
-    const presetName = document.createElement('div');
-    presetName.classList.add('preset-name');
-    presetName.textContent = name;
-    presetContent.appendChild(presetName);
-
-    const presetSize = document.createElement('div');
-    presetSize.classList.add('preset-size');
-    presetSize.textContent = `${width} x ${height}`;
-    presetContent.appendChild(presetSize);
-
-    const presetControls = document.createElement('div');
-    presetControls.classList.add('preset-controls');
-    preset.appendChild(presetControls);
-
-    const toggleInputWrapper = document.createElement('div');
-    toggleInputWrapper.classList.add('tooltip');
-    toggleInputWrapper.style.display = 'inherit';
-    presetControls.appendChild(toggleInputWrapper);
-
-    const toggleInput = document.createElement('input');
-    toggleInput.setAttribute('type', 'checkbox');
-    if (active)
-        toggleInput.setAttribute('checked', 'true');
-    toggleInput.classList.add('preset-toggle');
-    toggleInput.addEventListener('change', () => {
-        currentDevices.map((d) => {
-            if (d === device)
-                d.active = toggleInput.checked;
-        });
-        saveDevices(currentDevices);
-    });
-    toggleInputWrapper.appendChild(toggleInput);
-
-    const toggleTooltip = document.createElement('span');
-    toggleTooltip.classList.add('tooltip-content');
-    toggleTooltip.classList.add('tooltip-left');
-    toggleTooltip.style.right = "68px";
-    toggleTooltip.textContent = 'Toggle';
-    toggleInputWrapper.appendChild(toggleTooltip);
-
-    const removeButtonWrapper = document.createElement('div');
-    removeButtonWrapper.classList.add('remove-button-wrapper');
-    removeButtonWrapper.classList.add('tooltip');
-    presetControls.appendChild(removeButtonWrapper);
-
-    const removeButton = document.createElement('button');
-    removeButton.classList.add('cancel-button');
-    removeButton.addEventListener('click', () => {
-        if (currentDevices.length > 1) {
-            presetsContainer.removeChild(preset);
-            removeItem(currentDevices, device);
-            saveDevices(currentDevices);
-        }
-        else {
-            const modal = document.createElement('div');
-            modal.classList.add('warning-modal');
-
-            const img = document.createElement('img');
-            img.setAttribute('src', './icons/warning.svg');
-            modal.appendChild(img);
-
-            const p = document.createElement('p');
-            p.textContent = 'At least one device preset should remain in the list ...';
-            modal.appendChild(p);
-
-            const button = document.createElement('button');
-            button.classList.add('accept');
-            button.textContent = 'Got it!';
-            button.addEventListener('click', () => {
-                document.body.removeChild(modal);
-            });
-            modal.appendChild(button);
-
-            document.body.appendChild(modal);
-        }
-    });
-    removeButtonWrapper.appendChild(removeButton);
-
-    const removeTooltip = document.createElement('span');
-    removeTooltip.classList.add('tooltip-content');
-    removeTooltip.classList.add('tooltip-bottom');
-    removeTooltip.style.top = "43px";
-    removeTooltip.style.right = "0px";
-    removeTooltip.textContent = 'Delete';
-    removeButtonWrapper.appendChild(removeTooltip);
-
-    if (pushAtStart)
-        presetsContainer.insertBefore(preset, presetsContainer.firstChild);
-    else
-        presetsContainer.appendChild(preset);
-};
-
-(function setupPresets() {
+(function setup() {
     getDevices().then((deviceList) => {
         deviceList.forEach((device) => {
-            addPreset(device);
+            addPreset(presetsContainer, device);
+        });
+    });
+    const formatSelect = $('screen-type');
+    const formatOptions = [...formatSelect.getElementsByClassName('format-option')];
+    getSettings().then((settings) => {
+        formatOptions.forEach((option) => {
+            if (option.value === settings.imageFormat)
+                option.selected = true;
+            else
+                option.selected = false;
         });
     });
     const form = $('preset-form');
@@ -178,7 +51,7 @@ const addPreset = (device, pushAtStart = false) => {
                 $('device-width-input').value,
                 $('device-height-input').value
             );
-            addPreset(newDevice, true);
+            addPreset(presetsContainer, newDevice, true);
     
             form.reset();
         }
@@ -250,16 +123,16 @@ const getFilename = (url) => {
     return name;
 }
 
-const displayCapture = (blobs, filenames) => {
+const displayCapture = (blobs, filenames, settings) => {
     if (!filenames || !filenames.length) {
         console.warn('uh-oh');
         return;
     }
 
-    createCaptureWindow(blobs, filenames);
+    createCaptureWindow(blobs, filenames, settings);
 }
 
-const createCaptureWindow = (blobs, filenames, fileIndex = 0) => {
+const createCaptureWindow = (blobs, filenames, settings, fileIndex = 0) => {
     let filename = filenames[fileIndex];
     let last = fileIndex === filenames.length - 1;
 
@@ -278,15 +151,16 @@ const createCaptureWindow = (blobs, filenames, fileIndex = 0) => {
     currentDevice += 1;
 
     if (!last)
-        createCaptureWindow(filenames, fileIndex);
+        createCaptureWindow(blobs, filenames, settings, fileIndex);
     else {
         if (currentDevice < deviceList.length)
-            captureDevice(currentDevice);
+            captureDevice(currentDevice, settings);
         else {
-            chrome.windows.remove(resultWindowId);
             currentZip.generateAsync({type:"blob"}).then((content) => {
-                saveAs(content, "Multishot.zip");
+                const url =  URL.createObjectURL(content);
+                chrome.downloads.download({ url, filename: `${settings.zipName}.zip`, saveAs: settings.saveAs });
             });
+            chrome.windows.remove(resultWindowId);
         }
     }
 }
@@ -299,7 +173,7 @@ const progress = (complete) => {
     // console.warn(complete * 100 + '%');
 }
 
-const captureDevice = (index) => {
+const captureDevice = (index, settings) => {
     if (index > 0)
         chrome.windows.remove(resultWindowId);
     const device = deviceList[index];
@@ -326,16 +200,19 @@ const captureDevice = (index) => {
             format = format.split('.')[1];
     
             const fullPage = $('screen-full').checked;
-    
-            captureToFiles(
-                tab,
-                filename,
-                format,
-                fullPage,
-                displayCapture,
-                errorHandler,
-                progress
-            );
+            
+            setTimeout(() => {
+                captureToFiles(
+                    tab,
+                    filename,
+                    format,
+                    settings.imageQuality,
+                    fullPage,
+                    displayCapture,
+                    errorHandler,
+                    progress
+                );
+            }, settings.captureDelay * 1000);
             chrome.tabs.onUpdated.removeListener(listener);
         }
     };
@@ -345,15 +222,36 @@ const captureDevice = (index) => {
     });
 };
 
-$('screen-button').onclick = () => {
+const multishot = () => {
     currentDevice = 0;
     currentZip = new JSZip();
     chrome.tabs.query({active: true, currentWindow: true}, async (tabs) => {
         originalTab = tabs[0];
         deviceList = await getDevices();
         deviceList = deviceList.filter(device => device.active);
+
+        settings = await getSettings();
         
         if (deviceList && deviceList.length > 0)
-            captureDevice(currentDevice);
+            captureDevice(currentDevice, settings);
     });
-};
+}
+
+var onMessage = (data, sender, callback) => {
+    switch(data.msg) {
+        case 'take-screenshots': {
+            multishot();
+            break;
+        }
+        case 'open-settings': {
+            chrome.tabs.create({ url: './options.html' });
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+chrome.runtime.onMessage.addListener(onMessage);
+
+$('screen-button').onclick = multishot;
