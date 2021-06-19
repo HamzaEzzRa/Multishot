@@ -3,6 +3,9 @@ const $ = (id) => document.getElementById(id);
 var inputContainer = $('main-input');
 var presetsMain = $('main-presets');
 var presetsContainer = $('presets-container');
+var screenButton = $('screen-button');
+
+var screenshotting = false;
 
 const removeItem = (arr, device) => {
     var index = arr.indexOf(device);
@@ -158,6 +161,16 @@ const createCaptureWindow = (blobs, filenames, settings, fileIndex = 0) => {
         else {
             currentZip.generateAsync({type:"blob"}).then((content) => {
                 const url =  URL.createObjectURL(content);
+
+                screenButton.childNodes.forEach((node) => {
+                    if (node.style.display !== 'none')
+                        node.style.display = 'none';
+                    else
+                        node.style.display = 'block';
+                });
+                screenshotting = false;
+                screenButton.disabled = false;
+
                 chrome.downloads.download({ url, filename: `${settings.zipName}.zip`, saveAs: settings.saveAs });
             });
             chrome.windows.remove(resultWindowId);
@@ -201,7 +214,21 @@ const captureDevice = (index, settings) => {
     
             const fullPage = $('screen-full').checked;
             
-            setTimeout(() => {
+            if (settings.captureDelay > 0) {
+                setTimeout(() => {
+                    captureToFiles(
+                        tab,
+                        filename,
+                        format,
+                        settings.imageQuality,
+                        fullPage,
+                        displayCapture,
+                        errorHandler,
+                        progress
+                    );
+                }, settings.captureDelay * 1000);
+            }
+            else {
                 captureToFiles(
                     tab,
                     filename,
@@ -212,7 +239,7 @@ const captureDevice = (index, settings) => {
                     errorHandler,
                     progress
                 );
-            }, settings.captureDelay * 1000);
+            }
             chrome.tabs.onUpdated.removeListener(listener);
         }
     };
@@ -223,6 +250,18 @@ const captureDevice = (index, settings) => {
 };
 
 const multishot = () => {
+    if (screenshotting)
+        return;
+
+    screenshotting = true;
+    screenButton.childNodes.forEach((node) => {
+        if (node.style.display !== 'none')
+            node.style.display = 'none';
+        else
+            node.style.display = 'block';
+    });
+    screenButton.disabled = true;
+    
     currentDevice = 0;
     currentZip = new JSZip();
     chrome.tabs.query({active: true, currentWindow: true}, async (tabs) => {
@@ -235,7 +274,7 @@ const multishot = () => {
         if (deviceList && deviceList.length > 0)
             captureDevice(currentDevice, settings);
     });
-}
+};
 
 var onMessage = (data, sender, callback) => {
     switch(data.msg) {
@@ -250,8 +289,10 @@ var onMessage = (data, sender, callback) => {
         default:
             break;
     }
-}
+};
 
 chrome.runtime.onMessage.addListener(onMessage);
 
-$('screen-button').onclick = multishot;
+screenButton.onclick = () => {
+    multishot();
+}
