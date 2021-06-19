@@ -414,7 +414,7 @@ button.add-button {
     opacity: 0.65;
     margin-right: 2px;
     align-self: center;
-    background-image: url(icons/add.svg);
+    background-image: url(icons/green-add.svg);
     background-repeat: no-repeat;
     background-color: transparent;
     transition: opacity 0.2s ease;

@@ -20,6 +20,7 @@ const createDevice = (name, width, height) => {
         name: name,
         width: parseInt(width, 10),
         height: parseInt(height, 10),
+        zoom: 100,
         active: true,
     }
     currentDevices.unshift(newDevice);
@@ -100,8 +101,8 @@ const createDevice = (name, width, height) => {
 })();
 
 let originalTab,
+    originalZoom,
     currentZip,
-    currentTab,
     resultWindowId,
     deviceList,
     currentDevice = 0;
@@ -118,11 +119,10 @@ const getFilename = (url) => {
             .replace(/-+/g, '-')
             .replace(/^[_\-]+/, '')
             .replace(/[_\-]+$/, '');
-        name = '-' + name;
     }
     const device = deviceList[currentDevice];
-    name = name + '-' + ($('screen-date').checked ? new Date().toISOString() + '-' : '') +
-        device.width + 'x' + device.height + ext;
+    name = `${name}-` + ($('screen-date').checked ? `${new Date().toISOString()}-` : '') +
+        `${device.width}x${device.height}` + (device.zoom !== 100 ? `-${device.zoom}%` : '') + ext;
     return name;
 }
 
@@ -144,7 +144,7 @@ const createCaptureWindow = (blobs, filenames, settings, fileIndex = 0) => {
 
     if ($('screen-subfolder').checked) {
         const folderName = device.name.replaceAll('/', '_');
-        let folder = currentZip.folder(`${folderName}-${device.width}x${device.height}`);
+        let folder = currentZip.folder(`${folderName}-${device.width}x${device.height}-${device.zoom}%`);
         folder.file(filename, blob, {base64: true});
     }
     else
@@ -173,7 +173,9 @@ const createCaptureWindow = (blobs, filenames, settings, fileIndex = 0) => {
 
                 chrome.downloads.download({ url, filename: `${settings.zipName}.zip`, saveAs: settings.saveAs });
             });
-            chrome.windows.remove(resultWindowId);
+            chrome.windows.remove(resultWindowId, () => {
+                chrome.tabs.setZoom(originalTab.id, originalZoom);
+            });
         }
     }
 }
@@ -203,8 +205,6 @@ const captureDevice = (index, settings) => {
     };
     const listener = (tabId, changeInfo, tab) => {
         if (tab.url.indexOf(originalTab.url) != -1 && changeInfo.status == 'complete') {
-            currentTab = tab;
-
             let filename = getFilename(tab.url);
             let format = $('screen-type').value;
             if (format !== '.png' && format !== '.jpeg')
@@ -213,9 +213,25 @@ const captureDevice = (index, settings) => {
             format = format.split('.')[1];
     
             const fullPage = $('screen-full').checked;
+
+            chrome.tabs.onUpdated.removeListener(listener);
             
-            if (settings.captureDelay > 0) {
-                setTimeout(() => {
+            const start = () => {
+                if (settings.captureDelay > 0) {
+                    setTimeout(() => {
+                        captureToFiles(
+                            tab,
+                            filename,
+                            format,
+                            settings.imageQuality,
+                            fullPage,
+                            displayCapture,
+                            errorHandler,
+                            progress
+                        );
+                    }, settings.captureDelay * 1000);
+                }
+                else {
                     captureToFiles(
                         tab,
                         filename,
@@ -226,21 +242,11 @@ const captureDevice = (index, settings) => {
                         errorHandler,
                         progress
                     );
-                }, settings.captureDelay * 1000);
+                }
             }
-            else {
-                captureToFiles(
-                    tab,
-                    filename,
-                    format,
-                    settings.imageQuality,
-                    fullPage,
-                    displayCapture,
-                    errorHandler,
-                    progress
-                );
-            }
-            chrome.tabs.onUpdated.removeListener(listener);
+            chrome.tabs.setZoom(tabId, device.zoom / 100, () => {
+                start();
+            });
         }
     };
     chrome.windows.create(options, (window) => {
@@ -266,6 +272,7 @@ const multishot = () => {
     currentZip = new JSZip();
     chrome.tabs.query({active: true, currentWindow: true}, async (tabs) => {
         originalTab = tabs[0];
+        originalZoom = await chrome.tabs.getZoom();
         deviceList = await getDevices();
         deviceList = deviceList.filter(device => device.active);
 

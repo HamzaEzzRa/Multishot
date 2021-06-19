@@ -33,7 +33,7 @@ var presetsContainer = $('presets-container');
 
     getDevices().then((deviceList) => {
         deviceList.forEach((device) => {
-            addPreset(presetsContainer, device, false, false);
+            addPreset(presetsContainer, device, false, false, true);
         });
     });
 

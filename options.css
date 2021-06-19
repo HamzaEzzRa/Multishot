@@ -416,6 +416,50 @@ div.toggle-button div.knobs, div.toggle-button div.knobs:before, div.toggle-butt
     transition: 0.3s ease all;
 }
 
+div.zoom-container {
+    position: absolute;
+    top: 0;
+    right: 8px;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+div.zoom-container .zoom-header {
+    font-weight: 500;
+    margin-right: 8px;
+}
+
+div.preset-controls {
+    column-gap: 14px;
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+}
+
+.add-button, .minus-button {
+    width: 13px;
+    height: 13px;
+    border: 0;
+    opacity: 0.55;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+}
+
+.add-button:hover, .minus-button:hover {
+    opacity: 0.65;
+}
+
+.add-button {
+    background-image: url(icons/add.svg);
+}
+
+.minus-button {
+    background-image: url(icons/minus.svg);
+}
+
 .edit-button-wrapper {
     display: flex;
     justify-content: center;
@@ -423,7 +467,8 @@ div.toggle-button div.knobs, div.toggle-button div.knobs:before, div.toggle-butt
     width: 36px;
     height: 36px;
     margin-top: 10px;
-    padding-left: 2px;
+    padding-left: 2.5px;
+    padding-top: 1px;
     border: 2px solid rgba(255, 166, 0, 0.7);
     border-radius: 100%;
     transition: border 0.2s ease;
@@ -556,6 +601,12 @@ div.warning-modal div.controls-wrapper button.accept {
     color: white;
     box-shadow: 0px 6px 18px -5px red;
     cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.15s ease;
+}
+
+div.warning-modal div.controls-wrapper button.accept:hover {
+    opacity: 1;
 }
 
 div.warning-modal div.controls-wrapper button.cancel {
@@ -569,4 +620,10 @@ div.warning-modal div.controls-wrapper button.cancel {
     color: white;
     box-shadow: 0px 6px 18px -5px rgb(250, 163, 81);
     cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.15s ease;
+}
+
+div.warning-modal div.controls-wrapper button.cancel:hover {
+    opacity: 1;
 }

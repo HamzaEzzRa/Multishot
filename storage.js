@@ -14,6 +14,7 @@ const defaultDevices = [
         name: 'iPhone 5/SE',
         width: 320,
         height: 568,
+        zoom: 100,
         active: true,
     },
     {
@@ -21,6 +22,7 @@ const defaultDevices = [
         name: 'Galaxy S5',
         width: 360,
         height: 640,
+        zoom: 100,
         active: true,
     },
     {
@@ -28,6 +30,7 @@ const defaultDevices = [
         name: 'iPhone 6/7/8',
         width: 375,
         height: 667,
+        zoom: 100,
         active: true,
     },
     {
@@ -35,6 +38,7 @@ const defaultDevices = [
         name: 'iPhone X',
         width: 375,
         height: 812,
+        zoom: 100,
         active: true,
     },
     {
@@ -42,6 +46,7 @@ const defaultDevices = [
         name: 'Pixel 2',
         width: 411,
         height: 731,
+        zoom: 100,
         active: true,
     },
     {
@@ -49,6 +54,7 @@ const defaultDevices = [
         name: 'Pixel 2 XL',
         width: 411,
         height: 823,
+        zoom: 100,
         active: true,
     },
     {
@@ -56,6 +62,7 @@ const defaultDevices = [
         name: 'iPhone 6/7/8 Plus',
         width: 414,
         height: 736,
+        zoom: 100,
         active: true,
     },
     {
@@ -63,6 +70,7 @@ const defaultDevices = [
         name: 'iPad',
         width: 768,
         height: 1024,
+        zoom: 100,
         active: true,
     },
     {
@@ -70,6 +78,7 @@ const defaultDevices = [
         name: 'iPad Pro',
         width: 1024,
         height: 1366,
+        zoom: 100,
         active: true,
     },
     {
@@ -77,6 +86,7 @@ const defaultDevices = [
         name: 'Laptop',
         width: 1366,
         height: 768,
+        zoom: 100,
         active: true,
     },
     {
@@ -84,6 +94,7 @@ const defaultDevices = [
         name: 'Laptop',
         width: 1440,
         height: 900,
+        zoom: 100,
         active: true,
     },
     {
@@ -91,6 +102,7 @@ const defaultDevices = [
         name: 'Desktop',
         width: 1680,
         height: 1050,
+        zoom: 100,
         active: true,
     },
     {
@@ -98,6 +110,7 @@ const defaultDevices = [
         name: 'Desktop',
         width: 1920,
         height: 1080,
+        zoom: 100,
         active: true,
     },
     {
@@ -105,11 +118,32 @@ const defaultDevices = [
         name: 'Desktop',
         width: 2560,
         height: 1440,
+        zoom: 100,
         active: true,
     },
 ];
 
 let currentDevices = [];
+
+const zoomValues = [
+    25,
+    33,
+    50,
+    67,
+    75,
+    80,
+    90,
+    100,
+    110,
+    125,
+    150,
+    175,
+    200,
+    250,
+    300,
+    400,
+    500,
+]
 
 const getSettings = () => {
     return new Promise((resolve, reject) => {
@@ -144,7 +178,7 @@ const saveDevices = (devices) => {
     chrome.storage.sync.set({'devices': devices}, () => {});
 };
 
-const addPreset = (container, device, pushAtStart = false, addControls = true) => {
+const addPreset = (container, device, pushAtStart = false, addControls = true, addZoom = false) => {
     const type = device.type.toLowerCase(),
         name = device.name,
         width = device.width,
@@ -275,6 +309,60 @@ const addPreset = (container, device, pushAtStart = false, addControls = true) =
         removeTooltip.style.right = "0px";
         removeTooltip.textContent = 'Delete';
         removeButtonWrapper.appendChild(removeTooltip);
+    }
+    else if (addZoom) {
+        const zoomContainer = document.createElement('div');
+        zoomContainer.classList.add('zoom-container');
+
+        const zoomHeader = document.createElement('span');
+        zoomHeader.classList.add('zoom-header');
+        zoomHeader.textContent = 'Zoom';
+        zoomContainer.appendChild(zoomHeader);
+
+        const presetControls = document.createElement('div');
+        presetControls.classList.add('preset-controls');
+        zoomContainer.appendChild(presetControls);
+
+        const zoomAmount = document.createElement('span');
+        zoomAmount.style.fontSize = '17px';
+        zoomAmount.textContent = `${device.zoom}%`;
+
+        let zoomIndex = zoomValues.indexOf(device.zoom);
+        const minusButton = document.createElement('button');
+        minusButton.classList.add('minus-button');
+        presetControls.appendChild(minusButton);
+        minusButton.addEventListener('click', () => {
+            if (zoomIndex > 0) {
+                zoomIndex -= 1;
+                const newZoom = zoomValues[zoomIndex];
+                zoomAmount.textContent = `${newZoom}%`;
+                currentDevices.map((d) => {
+                    if (d === device)
+                        d.zoom = newZoom;
+                });
+                saveDevices(currentDevices);
+            }
+        });
+
+        presetControls.appendChild(zoomAmount);
+
+        const plusButton = document.createElement('button');
+        plusButton.classList.add('add-button');
+        presetControls.appendChild(plusButton);
+        plusButton.addEventListener('click', () => {
+            if (zoomIndex < zoomValues.length - 1) {
+                zoomIndex += 1;
+                const newZoom = zoomValues[zoomIndex];
+                zoomAmount.textContent = `${newZoom}%`;
+                currentDevices.map((d) => {
+                    if (d === device)
+                        d.zoom = newZoom;
+                });
+                saveDevices(currentDevices);
+            }
+        });
+
+        preset.appendChild(zoomContainer);
     }
 
     if (pushAtStart)
