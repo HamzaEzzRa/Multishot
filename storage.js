@@ -273,7 +273,7 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
         removeButton.classList.add('cancel-button');
         removeButton.addEventListener('click', () => {
             if (currentDevices.length > 1) {
-                presetsContainer.removeChild(preset);
+                container.removeChild(preset);
                 removeItem(currentDevices, device);
                 saveDevices(currentDevices);
             }
@@ -314,6 +314,10 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
         const controlsContainer = document.createElement('div');
         controlsContainer.classList.add('controls-container');
 
+        const zoomAmount = document.createElement('span');
+        zoomAmount.style.fontSize = '17px';
+        zoomAmount.textContent = `${device.zoom}%`;
+
         const resetZoomContainer = document.createElement('div');
         resetZoomContainer.classList.add('tooltip');
         controlsContainer.appendChild(resetZoomContainer);
@@ -321,13 +325,16 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
         const resetZoom = document.createElement('button');
         resetZoom.classList.add('reset-zoom');
         resetZoomContainer.appendChild(resetZoom);
-        resetZoom.addEventListener('click', () => {
-            zoomAmount.textContent = '100%';
-            currentDevices.map((d) => {
-                if (d === device)
-                    d.zoom = 100;
-            });
-            saveDevices(currentDevices);
+        resetZoom.addEventListener('click', async () => {
+            if (device.zoom !== 100) {
+                const deviceList = await getDevices();
+                zoomAmount.textContent = '100%';
+                deviceList.map((d) => {
+                    if (d === device)
+                        d.zoom = 100;
+                });
+                saveDevices(deviceList);
+            }
         });
 
         const resetTooltip = document.createElement('span');
@@ -349,24 +356,21 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
         presetControls.classList.add('preset-controls');
         zoomContainer.appendChild(presetControls);
 
-        const zoomAmount = document.createElement('span');
-        zoomAmount.style.fontSize = '17px';
-        zoomAmount.textContent = `${device.zoom}%`;
-
         let zoomIndex = zoomValues.indexOf(device.zoom);
         const minusButton = document.createElement('button');
         minusButton.classList.add('minus-button');
         presetControls.appendChild(minusButton);
-        minusButton.addEventListener('click', () => {
+        minusButton.addEventListener('click', async () => {
             if (zoomIndex > 0) {
                 zoomIndex -= 1;
                 const newZoom = zoomValues[zoomIndex];
                 zoomAmount.textContent = `${newZoom}%`;
-                currentDevices.map((d) => {
+                const deviceList = await getDevices();
+                deviceList.map((d) => {
                     if (d === device)
                         d.zoom = newZoom;
                 });
-                saveDevices(currentDevices);
+                saveDevices(deviceList);
             }
         });
 
@@ -375,16 +379,17 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
         const plusButton = document.createElement('button');
         plusButton.classList.add('add-button');
         presetControls.appendChild(plusButton);
-        plusButton.addEventListener('click', () => {
+        plusButton.addEventListener('click', async () => {
             if (zoomIndex < zoomValues.length - 1) {
                 zoomIndex += 1;
                 const newZoom = zoomValues[zoomIndex];
                 zoomAmount.textContent = `${newZoom}%`;
-                currentDevices.map((d) => {
+                const deviceList = await getDevices();
+                deviceList.map((d) => {
                     if (d === device)
                         d.zoom = newZoom;
                 });
-                saveDevices(currentDevices);
+                saveDevices(deviceList);
             }
         });
 
