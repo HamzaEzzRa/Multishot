@@ -311,8 +311,34 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
         removeButtonWrapper.appendChild(removeTooltip);
     }
     else if (addZoom) {
+        const controlsContainer = document.createElement('div');
+        controlsContainer.classList.add('controls-container');
+
+        const resetZoomContainer = document.createElement('div');
+        resetZoomContainer.classList.add('tooltip');
+        controlsContainer.appendChild(resetZoomContainer);
+
+        const resetZoom = document.createElement('button');
+        resetZoom.classList.add('reset-zoom');
+        resetZoomContainer.appendChild(resetZoom);
+        resetZoom.addEventListener('click', () => {
+            zoomAmount.textContent = '100%';
+            currentDevices.map((d) => {
+                if (d === device)
+                    d.zoom = 100;
+            });
+            saveDevices(currentDevices);
+        });
+
+        const resetTooltip = document.createElement('span');
+        resetTooltip.classList.add('tooltip-content');
+        resetTooltip.textContent = 'Reset default zoom';
+        resetTooltip.style.marginRight = '34px';
+        resetZoomContainer.appendChild(resetTooltip);
+
         const zoomContainer = document.createElement('div');
         zoomContainer.classList.add('zoom-container');
+        controlsContainer.appendChild(zoomContainer);
 
         const zoomHeader = document.createElement('span');
         zoomHeader.classList.add('zoom-header');
@@ -362,7 +388,7 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
             }
         });
 
-        preset.appendChild(zoomContainer);
+        preset.appendChild(controlsContainer);
     }
 
     if (pushAtStart)
