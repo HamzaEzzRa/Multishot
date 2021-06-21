@@ -16,6 +16,7 @@ const defaultDevices = [
         height: 568,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Mobile',
@@ -24,6 +25,7 @@ const defaultDevices = [
         height: 640,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Mobile',
@@ -32,6 +34,7 @@ const defaultDevices = [
         height: 667,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Mobile',
@@ -40,6 +43,7 @@ const defaultDevices = [
         height: 812,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Mobile',
@@ -48,6 +52,7 @@ const defaultDevices = [
         height: 731,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Mobile',
@@ -56,6 +61,7 @@ const defaultDevices = [
         height: 823,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Mobile',
@@ -64,6 +70,7 @@ const defaultDevices = [
         height: 736,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Tablet',
@@ -72,6 +79,7 @@ const defaultDevices = [
         height: 1024,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Tablet',
@@ -80,6 +88,7 @@ const defaultDevices = [
         height: 1366,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Laptop',
@@ -88,6 +97,7 @@ const defaultDevices = [
         height: 768,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Laptop',
@@ -96,6 +106,7 @@ const defaultDevices = [
         height: 900,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Desktop',
@@ -104,6 +115,7 @@ const defaultDevices = [
         height: 1050,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Desktop',
@@ -112,6 +124,7 @@ const defaultDevices = [
         height: 1080,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
     {
         type: 'Desktop',
@@ -120,6 +133,7 @@ const defaultDevices = [
         height: 1440,
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     },
 ];
 
@@ -178,6 +192,8 @@ const saveDevices = (devices) => {
     chrome.storage.sync.set({'devices': devices}, () => {});
 };
 
+let dragSourceNode = null;
+
 const addPreset = (container, device, pushAtStart = false, addControls = true, addZoom = false) => {
     const type = device.type.toLowerCase(),
         name = device.name,
@@ -209,6 +225,7 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
 
     const preset = document.createElement('div');
     preset.classList.add('preset');
+    preset.id = container.childElementCount;
 
     const detailsWrapper = document.createElement('div');
     detailsWrapper.style.display = 'inherit';
@@ -250,7 +267,7 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
         toggleInput.classList.add('preset-toggle');
         toggleInput.addEventListener('change', () => {
             currentDevices.map((d) => {
-                if (d === device)
+                if (isEqual(device, d))
                     d.active = toggleInput.checked;
             });
             saveDevices(currentDevices);
@@ -311,6 +328,46 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
         removeButtonWrapper.appendChild(removeTooltip);
     }
     else if (addZoom) {
+        preset.draggable = true;
+        preset.addEventListener('dragstart', (event) => {
+            preset.style.opacity = '0.5';
+            
+            dragSourceNode = preset;
+
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/html', preset.innerHTML);
+        });
+        preset.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            return false;
+        });
+        preset.addEventListener('dragenter', (event) => {
+            preset.classList.add('over');
+        });
+        preset.addEventListener('dragleave', (event) => {
+            preset.classList.remove('over');
+        });
+        preset.addEventListener('dragend', (event) => {
+            preset.style.opacity = '1';
+            [...container.getElementsByClassName('preset')].forEach((element) => {
+                element.classList.remove('over');
+            });
+        });
+        preset.addEventListener('drop', async (event) => {
+            event.stopPropagation();
+
+            if (dragSourceNode !== preset) {
+                dragSourceNode.innerHTML = preset.innerHTML;
+                preset.innerHTML = event.dataTransfer.getData('text/html');
+
+                const deviceList = await getDevices();
+                [deviceList[preset.id], deviceList[dragSourceNode.id]] = [deviceList[dragSourceNode.id], deviceList[preset.id]];
+                saveDevices(deviceList);
+            }
+
+            return false;
+        });
+
         const controlsContainer = document.createElement('div');
         controlsContainer.classList.add('controls-container');
 
@@ -330,9 +387,11 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
                 const deviceList = await getDevices();
                 zoomAmount.textContent = '100%';
                 deviceList.map((d) => {
-                    if (d === device)
+                    if (isEqual(device, d)) {
+                        device.zoom = 100;
                         d.zoom = 100;
-                });
+                    }
+                })
                 saveDevices(deviceList);
             }
         });
@@ -366,11 +425,15 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
                 const newZoom = zoomValues[zoomIndex];
                 zoomAmount.textContent = `${newZoom}%`;
                 const deviceList = await getDevices();
+                console.log(deviceList);
                 deviceList.map((d) => {
-                    if (d === device)
+                    if (isEqual(device, d)) {
+                        device.zoom = newZoom;
                         d.zoom = newZoom;
+                    }
                 });
                 saveDevices(deviceList);
+                console.log(deviceList);
             }
         });
 
@@ -385,11 +448,15 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
                 const newZoom = zoomValues[zoomIndex];
                 zoomAmount.textContent = `${newZoom}%`;
                 const deviceList = await getDevices();
+                console.log(deviceList);
                 deviceList.map((d) => {
-                    if (d === device)
+                    if (isEqual(device, d)) {
+                        device.zoom = newZoom;
                         d.zoom = newZoom;
+                    }
                 });
                 saveDevices(deviceList);
+                console.log(deviceList);
             }
         });
 
@@ -400,6 +467,8 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
         container.insertBefore(preset, container.firstChild);
     else
         container.appendChild(preset);
+
+    console.log(currentDevices);
 };
 
 const resetDevices = () => {

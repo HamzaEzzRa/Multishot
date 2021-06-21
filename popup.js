@@ -22,6 +22,7 @@ const createDevice = (name, width, height) => {
         height: parseInt(height, 10),
         zoom: 100,
         active: true,
+        createdAt: Date.now(),
     }
     currentDevices.unshift(newDevice);
     saveDevices(currentDevices);

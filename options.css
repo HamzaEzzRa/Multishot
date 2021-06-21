@@ -276,11 +276,23 @@ div.preset {
     align-items: stretch;
     border-radius: 3px;
     justify-content: space-between;
+    cursor: move;
+    margin-bottom: 3px;
 }
 
-/* div.preset:hover {
-    background: #ffa60080;
-} */
+div.preset:hover {
+    box-shadow: 1px 1px 4px rgb(0 0 0 / 20%);
+    top: -2px;
+    z-index: 2;
+}
+
+div.preset.over {
+    border: 2px dotted rgb(240, 210, 175);
+}
+
+div.preset.over div.zoom-container {
+    margin-top: 1px;
+}
 
 img.preset-icon {
     position: relative;
@@ -449,6 +461,7 @@ div.zoom-container {
     align-items: center;
     padding-left: 15px;
     border-left: solid 1.5px #ccc;
+    margin-top: 3px;
 }
 
 div.zoom-container .zoom-header {

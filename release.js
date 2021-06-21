@@ -1,5 +1,17 @@
 const releases = [
     {
+        version: "0.4",
+        date: "2021 / 06 / 21",
+        notes: [
+            "Added an option to adjust the zoom level for each preset",
+            "Fixed a bug with the screenshot hotkey",
+            "More changes to the UI",
+            "Fixed a bug where the zoom doesn't sync with the preset configuration",
+            "Added an option to drag and reorder presets",
+            "Removed unnecessary permissions",
+        ],
+    },
+    {
         version: "0.3",
         date: "2021 / 06 / 18",
         notes: [
