@@ -10,7 +10,7 @@ var onMessage = (data, sender, callback) => {
         return true;
     }
     else
-        console.error('Unknown message received from background: ' + data.msg);
+        console.error('Unknown message received: ' + data.msg);
 }
 
 if (!window.hasScreenCapturePage) {

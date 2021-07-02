@@ -21,41 +21,46 @@ const initiateCapture = (tab, fullPage, callback) => {
 };
 
 const capture = (data, screenshots, sendResponse, format, quality) => {
-    chrome.tabs.captureVisibleTab(resultWindowId, { format, quality }, (dataURI) => {
-        if (dataURI) {
-            let image = new Image();
-            image.onload = () => {
-                data.image = {width: image.width, height: image.height};
-
-                if (data.windowWidth !== image.width) {
-                    let scale = image.width / data.windowWidth;
-                    data.x *= scale;
-                    data.y *= scale;
-                    data.totalWidth *= scale;
-                    data.totalHeight *= scale;
-                }
-
-                if (!screenshots.length) {
-                    Array.prototype.push.apply(
-                        screenshots,
-                        initScreenshots(data.totalWidth, data.totalHeight)
-                    );
-                }
-
-                filterScreenshots(
-                    data.x, data.y, image.width, image.height, screenshots
-                ).forEach((screenshot) => {
-                    screenshot.ctx.drawImage(
-                        image,
-                        data.x - screenshot.left,
-                        data.y - screenshot.top
-                    );
-                });
-
-                sendResponse(JSON.stringify(data, null, 4) || true);
-            };
-            image.src = dataURI;
-        }
+    return new Promise((resolve, reject) => {
+        chrome.tabs.captureVisibleTab(resultWindowId, { format, quality }, (dataURI) => {
+            if (dataURI) {
+                let image = new Image();
+                image.onload = () => {
+                    data.image = {width: image.width, height: image.height};
+    
+                    if (data.windowWidth !== image.width) {
+                        let scale = image.width / data.windowWidth;
+                        data.x *= scale;
+                        data.y *= scale;
+                        data.totalWidth *= scale;
+                        data.totalHeight *= scale;
+                    }
+    
+                    let output = {};
+                    if (!screenshots.length) {
+                        output = initScreenshots(data.totalWidth, data.totalHeight);
+                        Array.prototype.push.apply(
+                            screenshots,
+                            output.results
+                        );
+                    }
+    
+                    filterScreenshots(
+                        data.x, data.y, image.width, image.height, screenshots
+                    ).forEach((screenshot) => {
+                        screenshot.ctx.drawImage(
+                            image,
+                            data.x - screenshot.left,
+                            data.y - screenshot.top
+                        );
+                    });
+    
+                    sendResponse(JSON.stringify(data, null, 4) || true);
+                    resolve(output.sizes);
+                };
+                image.src = dataURI;
+            }
+        });
     });
 };
 
@@ -73,7 +78,8 @@ const initScreenshots = (totalWidth, totalHeight) => {
         row, col, canvas, left, top;
 
     let canvasIndex = 0;
-    let result = [];
+    let results = [];
+    let sizes = [];
 
     for (row = 0; row < numRows; row++) {
         for (col = 0; col < numCols; col++) {
@@ -81,10 +87,12 @@ const initScreenshots = (totalWidth, totalHeight) => {
             canvas.width = (col == numCols - 1 ? totalWidth % maxWidth || maxWidth : maxWidth);
             canvas.height = (row == numRows - 1 ? totalHeight % maxHeight || maxHeight : maxHeight);
 
+            sizes.push({ width: canvas.width, height: canvas.height });
+
             left = col * maxWidth;
             top = row * maxHeight;
 
-            result.push({
+            results.push({
                 canvas: canvas,
                 ctx: canvas.getContext('2d'),
                 index: canvasIndex,
@@ -96,7 +104,7 @@ const initScreenshots = (totalWidth, totalHeight) => {
             canvasIndex++;
         }
     }
-    return result;
+    return { results, sizes };
 };
 
 const filterScreenshots = (imgLeft, imgTop, imgWidth, imgHeight, screenshots) => {
@@ -134,6 +142,7 @@ const saveBlob = (blob, filename, callback, errback) => {
 const captureToBlobs = (tab, format, quality, fullPage, callback, errback, progress) => {
     let loaded = false,
         screenshots = [],
+        sizes = [],
         timeout = 3000,
         timedOut = false,
         noOp = () => {};
@@ -148,7 +157,12 @@ const captureToBlobs = (tab, format, quality, fullPage, callback, errback, progr
     const listener = (request, sender, sendResponse) => {
         if (request.msg === 'capture') {
             progress(request.complete);
-            capture(request, screenshots, sendResponse, format, quality);
+            capture(request, screenshots, sendResponse, format, quality).then((res) => {
+                Array.prototype.push.apply(
+                    sizes,
+                    res
+                );
+            });
 
             return true;
         }
@@ -172,7 +186,7 @@ const captureToBlobs = (tab, format, quality, fullPage, callback, errback, progr
 
             initiateCapture(tab, fullPage, () => {
                 chrome.runtime.onMessage.removeListener(listener);
-                callback(getBlobs(screenshots));
+                callback(getBlobs(screenshots), sizes);
             });
         }
     });
@@ -186,7 +200,7 @@ const captureToBlobs = (tab, format, quality, fullPage, callback, errback, progr
 };
 
 const captureToFiles = (tab, filename, format, quality, fullPage, callback, errback, progress) => {
-    captureToBlobs(tab, format, quality, fullPage, (blobs) => {
+    captureToBlobs(tab, format, quality, fullPage, (blobs, sizes) => {
         let i = 0,
             len = blobs.length,
             filenames = [];
@@ -195,7 +209,7 @@ const captureToFiles = (tab, filename, format, quality, fullPage, callback, errb
             saveBlob(blobs[i], filename, (filename) => {
                 i++;
                 filenames.push(filename);
-                i >= len ? callback(blobs, filenames, settings) : doNext();
+                i >= len ? callback(blobs, sizes, format, filenames, settings) : doNext();
             }, errback);
         })();
     }, errback, progress);

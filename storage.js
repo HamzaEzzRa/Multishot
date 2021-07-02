@@ -1,12 +1,23 @@
 const defaultSettings = {
-    imageFormat: '.png',
+    rememberHome: true,
     imageQuality: 80, // This only affects .jpeg files
     captureDelay: 0,
     zipName: 'Multishot',
     saveAs: false,
+    savePDF: false,
+    saveToCloud: false,
 };
 
 let currentSettings = {};
+
+const defaultHome = {
+    imageType: '.png',
+    fullPageCapture: true,
+    addDateToName: true,
+    outputInSubfolders: true,
+}
+
+let currentHome = {};
 
 const defaultDevices = [
     {
@@ -178,6 +189,25 @@ const resetSettings = () => {
     saveSettings(currentSettings);
 };
 
+const getHome = () => {
+    return new Promise((resolve, reject) => {
+        chrome.storage.sync.get('home', (home) => {
+            home = home.home;
+            currentHome = {...home};
+            resolve(home);
+        });
+    });
+};
+
+const saveHome = (home) => {
+    chrome.storage.sync.set({'home': home}, () => {});
+};
+
+const resetHome = () => {
+    currentHome = {...defaultHome};
+    saveHome(currentHome);
+};
+
 const getDevices = () => {
     return new Promise((resolve, reject) => {
         chrome.storage.sync.get('devices', (devices) => {
@@ -194,7 +224,26 @@ const saveDevices = (devices) => {
 
 let dragSourceNode = null;
 
-const addPreset = (container, device, pushAtStart = false, addControls = true, addZoom = false) => {
+const getOwnTabs = () => {
+    return Promise.all(
+        chrome.extension.getViews({type: 'tab'}).map(view =>
+            new Promise(resolve =>
+                view.chrome.tabs.getCurrent(tab =>
+                    resolve(Object.assign(tab, {url: view.location.href}))
+                )
+            )
+        )
+    );
+};
+
+const removeItem = (arr, device) => {
+    var index = arr.indexOf(device);
+    if (index > -1)
+        arr.splice(index, 1);
+    return arr;
+};
+
+const addPreset = (container, device, pushAtStart = false, addControls = true, addZoom = false, newDevice = false) => {
     const type = device.type.toLowerCase(),
         name = device.name,
         width = device.width,
@@ -225,7 +274,17 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
 
     const preset = document.createElement('div');
     preset.classList.add('preset');
-    preset.id = container.childElementCount;
+    if (newDevice) {
+        const children = container.children;
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            child.id = parseInt(child.id, 10) + 1;
+        }
+        preset.id = 0;
+    }
+    else {
+        preset.id = container.childElementCount;
+    }
 
     const detailsWrapper = document.createElement('div');
     detailsWrapper.style.display = 'inherit';
@@ -265,12 +324,10 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
         if (active)
             toggleInput.setAttribute('checked', 'true');
         toggleInput.classList.add('preset-toggle');
-        toggleInput.addEventListener('change', () => {
-            currentDevices.map((d) => {
-                if (isEqual(device, d))
-                    d.active = toggleInput.checked;
-            });
-            saveDevices(currentDevices);
+        toggleInput.addEventListener('change', async () => {
+            const deviceList = await getDevices();
+            deviceList[parseInt(preset.id, 10)].active = toggleInput.checked;
+            saveDevices(deviceList);
         });
         toggleInputWrapper.appendChild(toggleInput);
 
@@ -288,11 +345,25 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
 
         const removeButton = document.createElement('button');
         removeButton.classList.add('cancel-button');
-        removeButton.addEventListener('click', () => {
+        removeButton.addEventListener('click', async () => {
             if (currentDevices.length > 1) {
+                const children = container.children;
+                for (let i = 0; i < children.length; i++) {
+                    const child = children[i];
+                    const id = parseInt(child.id, 10);
+                    if (id > parseInt(preset.id, 10))
+                        child.id -= 1;
+                }
+
                 container.removeChild(preset);
                 removeItem(currentDevices, device);
                 saveDevices(currentDevices);
+                const extensionTabs = await getOwnTabs();
+                extensionTabs.forEach((t) => {
+                    urlContent = t.url.split('/');
+                    if (urlContent.length > 0 && urlContent[urlContent.length - 1].includes('options.html'))
+                        chrome.tabs.reload(t.id);
+                });
             }
             else {
                 const modal = document.createElement('div');
@@ -345,6 +416,9 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
             preset.classList.add('over');
         });
         preset.addEventListener('dragleave', (event) => {
+            if (event.currentTarget && event.currentTarget.contains(event.relatedTarget))
+                return;
+
             preset.classList.remove('over');
         });
         preset.addEventListener('dragend', (event) => {
@@ -361,7 +435,7 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
                 preset.innerHTML = event.dataTransfer.getData('text/html');
 
                 const deviceList = await getDevices();
-                [deviceList[preset.id], deviceList[dragSourceNode.id]] = [deviceList[dragSourceNode.id], deviceList[preset.id]];
+                [deviceList[parseInt(preset.id, 10)], deviceList[dragSourceNode.id]] = [deviceList[dragSourceNode.id], deviceList[parseInt(preset.id, 10)]];
                 saveDevices(deviceList);
             }
 
@@ -386,12 +460,8 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
             if (device.zoom !== 100) {
                 const deviceList = await getDevices();
                 zoomAmount.textContent = '100%';
-                deviceList.map((d) => {
-                    if (isEqual(device, d)) {
-                        device.zoom = 100;
-                        d.zoom = 100;
-                    }
-                })
+                device.zoom = 100;
+                deviceList[parseInt(preset.id, 10)].zoom = 100;
                 saveDevices(deviceList);
             }
         });
@@ -425,15 +495,9 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
                 const newZoom = zoomValues[zoomIndex];
                 zoomAmount.textContent = `${newZoom}%`;
                 const deviceList = await getDevices();
-                console.log(deviceList);
-                deviceList.map((d) => {
-                    if (isEqual(device, d)) {
-                        device.zoom = newZoom;
-                        d.zoom = newZoom;
-                    }
-                });
+                device.zoom = newZoom;
+                deviceList[parseInt(preset.id, 10)].zoom = newZoom;
                 saveDevices(deviceList);
-                console.log(deviceList);
             }
         });
 
@@ -448,15 +512,9 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
                 const newZoom = zoomValues[zoomIndex];
                 zoomAmount.textContent = `${newZoom}%`;
                 const deviceList = await getDevices();
-                console.log(deviceList);
-                deviceList.map((d) => {
-                    if (isEqual(device, d)) {
-                        device.zoom = newZoom;
-                        d.zoom = newZoom;
-                    }
-                });
+                device.zoom = newZoom;
+                deviceList[parseInt(preset.id)].zoom = newZoom;
                 saveDevices(deviceList);
-                console.log(deviceList);
             }
         });
 
@@ -467,8 +525,6 @@ const addPreset = (container, device, pushAtStart = false, addControls = true, a
         container.insertBefore(preset, container.firstChild);
     else
         container.appendChild(preset);
-
-    console.log(currentDevices);
 };
 
 const resetDevices = () => {
@@ -478,6 +534,7 @@ const resetDevices = () => {
 
 chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+        resetHome();
         resetDevices();
         resetSettings();
     }

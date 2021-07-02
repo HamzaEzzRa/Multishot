@@ -3,32 +3,30 @@ const $ = (id) => document.getElementById(id);
 var presetsContainer = $('presets-container');
 
 (function setup() {
-    const formatOptionsContainer = $('image-format-options');
-    const formatOptions = [...formatOptionsContainer.getElementsByClassName('format-option')];
-
+    const rememberOption = $('remember-home');
     const qualityOption = $('image-quality');
     const delayOption = $('capture-delay');
     const nameOption = $('zip-name');
     const saveAsOption = $('save-as');
+    const pdfOption = $('save-pdf');
+    const cloudOption = $('cloud-upload');
 
     getSettings().then((settings) => {
-        const imageFormat = settings.imageFormat,
+        const rememberHome = settings.rememberHome,
             imageQuality = settings.imageQuality,
             captureDelay = settings.captureDelay,
             zipName = settings.zipName,
-            saveAs = settings.saveAs;
+            saveAs = settings.saveAs,
+            savePDF = settings.savePDF,
+            saveToCloud = settings.saveToCloud;
 
-        formatOptions.forEach((option) => {
-            if (option.value === imageFormat)
-                option.selected = true;
-            else
-                option.selected = false;
-        });
-
+        rememberOption.checked = rememberHome;
         qualityOption.value = imageQuality;
         delayOption.value = captureDelay;
         nameOption.value = zipName;
         saveAsOption.checked = saveAs;
+        pdfOption.checked = savePDF;
+        cloudOption.checked = saveToCloud;
     });
 
     getDevices().then((deviceList) => {
@@ -37,9 +35,11 @@ var presetsContainer = $('presets-container');
         });
     });
 
-    formatOptionsContainer.addEventListener('change', (event) => {
-        currentSettings.imageFormat = event.target.value;
+    rememberOption.addEventListener('change', () => {
+        currentSettings.rememberHome = rememberOption.checked;
         saveSettings(currentSettings);
+        if (!rememberOption.checked)
+            resetHome();
     });
 
     qualityOption.addEventListener('input', (event) => {
@@ -88,6 +88,24 @@ var presetsContainer = $('presets-container');
 
     saveAsOption.addEventListener('change', () => {
         currentSettings.saveAs = saveAsOption.checked;
+        saveSettings(currentSettings);
+    });
+
+    pdfOption.addEventListener('change', () => {
+        currentSettings.savePDF = pdfOption.checked;
+        if (pdfOption.checked) {
+            cloudOption.checked = false;
+            currentSettings.saveToCloud = cloudOption.checked;
+        }
+        saveSettings(currentSettings);
+    });
+
+    cloudOption.addEventListener('change', () => {
+        currentSettings.saveToCloud = cloudOption.checked;
+        if (cloudOption.checked) {
+            pdfOption.checked = false;
+            currentSettings.savePDF = pdfOption.checked;
+        }
         saveSettings(currentSettings);
     });
 

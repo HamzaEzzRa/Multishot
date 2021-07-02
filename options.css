@@ -101,7 +101,7 @@ div.sidebar-main footer {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 67.5%;
+    margin-top: 50%;
 }
 
 div.sidebar-main footer p {
@@ -132,7 +132,7 @@ main {
     width: 46.3rem;
     height: fit-content;
     min-height: 52vh;
-    padding: 0px 0rem 1.4rem;
+    padding: 0px 0rem 1rem;
     border: 1px solid #CDCDCD;
     border-radius: 4px;
     background-color: #FFF;
@@ -157,7 +157,7 @@ main a:hover {
 
 main section {
     margin: 0 2rem;
-    padding-top: 1rem;
+    padding: 1rem 0;
     border-top: 1px solid #CDCDCD;
 }
 
@@ -175,6 +175,7 @@ main section .options-title {
 
 main section ul.options-ul {
     padding: 5px 45px;
+    margin-bottom: 0;
 }
 
 ul li.options-li {
@@ -207,8 +208,11 @@ ul li.options-li .option-desc {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 20px;
-    height: 20px;
+    width: 32px;
+    height: 32px;
+    margin-top: 10px;
+    padding-left: 2.5px;
+    padding-top: 1px;
     border: 2px solid rgba(255, 166, 0, 0.7);
     border-radius: 100%;
     transition: border 0.2s ease;
@@ -225,7 +229,7 @@ ul li.options-li .option-desc {
 }
 
 .reset-button {
-    width: 70%;
+    width: 77%;
     height: 70%;
     border: 0;
     opacity: 0.7;
@@ -539,7 +543,7 @@ div.preset-controls {
 tbody .hotkey-container {
     display: flex;
     align-items: center;
-    margin: 6px 0;
+    padding: 6px 10px;
 }
 
 tbody .hotkey-desc {
@@ -555,7 +559,7 @@ code.hotkey-command {
     line-height: 24px;
     display: block;
     text-align: center;
-    margin: 4px 16px 4px 0;
+    margin: 4px 20px 4px 0;
     padding: 0 8px;
 }
 
