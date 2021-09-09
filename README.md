@@ -10,7 +10,7 @@ For development:
 5. Select the project folder
 
 For users:
-- Coming soon (Submission to the Chrome Web Store is being reviewed)
+- Add the extension to Chrome from the [Web Store](https://chrome.google.com/webstore/detail/multishot/ilcokocopmbcgoealmibcngobefggidj).
 
 ### Notes
 - Featured in the hall of fame of [open-source-ideas](https://github.com/open-source-ideas/open-source-ideas#completed-hall-of-fame).
