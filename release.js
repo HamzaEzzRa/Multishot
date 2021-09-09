@@ -1,5 +1,12 @@
 const releases = [
     {
+        version: "1.0.1",
+        date: "2021 / 09 / 08",
+        notes: [
+            "Fixed an issue with Chrome's update (v92) limiting the number of screenshots taken to 2 per second"
+        ],
+    },
+    {
         version: "1.0",
         date: "2021 / 07 / 02",
         notes: [
